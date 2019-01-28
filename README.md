@@ -65,7 +65,7 @@ key functions have names beginning with "fd_" (for file directory; these usually
 ----Super-simple spike timing:
 
 --Initialization and usage--
-Select a wave to analyze. (A simple way to do this is to display it via the abf loader then right click and select copy trace name.) Then run this command: spike_timesFromDvDt(...) and pass the wave to be analyzed as the first parameter. See commments next to additional parameters for more information. 
+Select a wave to analyze. (A simple way to do this is to display it via the abf loader then right click and select copy trace name.) Then run this command: spike_timesFromDvDt(...) and pass the wave to be analyzed as the first parameter. For more information, see the commments next to the input parameters of spike_timesFromDvDt(...), as well as this example:
 
 In the simplest usage, use the cursors (brought up with ctrl+i while a graph plotting the wave is top window) to select a wave and specify a range where there are no spikes, from which the threshold is calculated. Place cursor A at the start of the region and cursor B at the end, then run:
 
