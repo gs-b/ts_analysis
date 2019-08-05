@@ -278,7 +278,7 @@ end
 
 
 //FORMATTING OF THE TIMESTAMP
-static function/S notes_getNBTimeStamp(includeDelimiters,notebookName)
+function/S notes_getNBTimeStamp(includeDelimiters,notebookName)	//exposed for call from ThorSlowWheels.ipf
 	Variable includeDelimiters
 	String notebookName
 	
