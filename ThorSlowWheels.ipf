@@ -259,7 +259,7 @@ function tsw_attemptReconnectAllPanels()
 		panel = stringfromlist(i,possiblePanels)
 		if (wintype(panel) == 7)		//panel exists by this name
 			Print "tsw_attemptReconnectAllPanels(): attempting reconnection to thor labs filter wheels in panel,",panel
-			tsw_configureAllPorts(panel)
+			tsw_configureAllPorts(panel,0)
 		endif
 		
 	endfor
@@ -315,7 +315,7 @@ function tsw_btnHandling(s) : ButtonControl
 			tsw_closeAllPorts(panelStr,0)		//set 1 or 0 to check with user before closing ports. Igor automatically reconnects if prompted so it doesn't really seem necessary to check
 			break
 		case "connectAllPorts":
-			tsw_configureAllPorts(panelStr)
+			tsw_configureAllPorts(panelStr,1)
 			break
 		case "printToNotebook":
 			Variable shiftDown= (s.eventmod & 2^1)>0
@@ -368,8 +368,14 @@ function tsw_setAllWheels(mainPanelStr)
 	endfor
 end
 
-function tsw_configureAllPorts(panelName)
+function tsw_configureAllPorts(panelName,resetFirst)
 	String panelName
+	Variable resetFirst
+	
+	if (resetFirst)
+		Print "tsw_configureAllPorts() resetting ports. Will attempt to reconnect to Thor Labs (slow) Filtter Wheels, but other serial I/O will be disrupted. These should be reconnected separately"
+		vdt2 resetPorts
+	endif
 	
 	string wheelsList = GetUserData(panelName, "", "wheelsList")
 	string wheelInfo,comStr
