@@ -1,7 +1,7 @@
 # Igor_general
-Electrophysiology analysis, including abf loading
+Electrophysiology analysis, including abf loading and analysis routines.
 
-The main procedure (Igor_gb_general.ipf) file compiles in the latest version of Igor (8.03B01, available from ) and probably all versions of Igor 7 and 8. It does not to compile in Igor versions earlier than 7. Getting to compile in, for example, Igor 6 would require a faily major rewrite and loss of functionality.
+The main procedure (Igor_gb_general.ipf) file compiles in the latest version of Igor (8.03B01, available from ) and probably all versions of Igor 7 and 8. It does not to compile in Igor versions earlier than 7. Getting to compile in, for example, Igor 6 would require a fairly major rewrite and loss of functionality.
 
 All procedures are currently contained in a single ipf for ease of loading into an instance of Igor (which is best done by dragging it from a local copy of the git repo).
 
