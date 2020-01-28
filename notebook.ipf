@@ -1,17 +1,22 @@
 #pragma TextEncoding = "Windows-1252"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-//constants related to time-stamped notebook with automatic backup (functions start with notes_)
-static strconstant ks_nbBackupPath_AS = "_nbPath"		//append string for notebook backup
-static constant k_nbBackupRateSecs = 600		//save every 10 min
-static strconstant ks_igorFormatSave_AS = "_i_"
-static strconstant ks_txtFormatSave_AS = "_t_"
-static strconstant ks_nbBackupBgName_AS = "_buBg"
+//This procedure file adds timestamping,backups, and other automated functions to Igor notebooks
+//To start a new notebook, run this at the command line (Ctrl+J brings up the command line): "notes_newNB("whatever")
+//"whatever" should be the preferred name of your notebook
 
-//constants related to ABF file acquisition synchronization (functions start with FT_ for file track)
-static strconstant ks_ftTrackPathName_AS = "ftPath"		//no underscore needed
+//You will prompted to choose a location on your hard drive to which to save the notebook logs
 
-//CREATING A NEW NOTEBOOK -- uses proper settings and attaches a hook function that allows timestamps, ABF file tracking, thor lab slow wheel tracking
+//lines are timestamped when you hit enter, shift+enter will allow you to add a line without a timestamp
+
+//When you have the notebook window as the top window, there are additional options under the "Notebook" top menu
+
+//I recommend that you then save the pxp file and dedicate it to your notekeeping.
+//When you want to add notes, reopen the pxp file and start editing. When you finish editing,
+//save the notebook (CTRL+SHIFT+S) and save the pxp (CTRL+S)
+
+//I also recommend using top menu-->notebook-->hide ruler for a more compact notebook display
+
 function notes_newNB(notebookName)
 	string notebookName
 	
@@ -23,6 +28,16 @@ function notes_newNB(notebookName)
 	
 	notes_winHook_apply(notebookName)
 end
+
+//constants related to time-stamped notebook with automatic backup (functions start with notes_)
+static strconstant ks_nbBackupPath_AS = "_nbPath"		//append string for notebook backup
+static constant k_nbBackupRateSecs = 600		//save every 10 min
+static strconstant ks_igorFormatSave_AS = "_i_"
+static strconstant ks_txtFormatSave_AS = "_t_"
+static strconstant ks_nbBackupBgName_AS = "_buBg"
+
+//constants related to ABF file acquisition synchronization (functions start with FT_ for file track)
+static strconstant ks_ftTrackPathName_AS = "ftPath"		//no underscore needed
 
 function notes_winHook_apply(notebookName)
 	String notebookName
@@ -308,14 +323,21 @@ static function/s notes_getTimeStamp(notebookName)
 	
 	Variable nbOK=(strlen(notebookname) > 0) && (wintype(notebookname) > 0)
 	Variable ft_tracking = nbOK && ft_getTrackingStatus(notebookName)
+
+#if (exists("vdt2"))	
 	Variable nbTsw_tracking = nbOK && nbTsw_getTrackingStatus(notebookName)
-	
+#else
+	Variable nbTsw_tracking = 0
+#endif	
+
 	String out = GetDateTimeString()
 	if (ft_tracking || nbTsw_tracking)
 		out+=";"
 	endif	
 	if (nbTsw_tracking)
-		out+=nbTsw_track(notebookName)
+#if (exists("vdt2"))	
+	out+=nbTsw_track(notebookName)
+#endif
 	endif
 	if (ft_tracking)
 		out+=ft_track(notebookName,1)
@@ -341,34 +363,42 @@ function/S ft_menuDisplayStr()		//cannot be static for call from within menu dec
 	return "File tracking OFF -- enable?" 
 end
 
-static function ft_toggle()		//used in menu, cant be static
+function ft_toggle()		//used in menu, cant be static
 	String notebookName =  winname(0,16)		//would have to be top notebook that is being modified to get this menu options
 	
 	Variable tracking = ft_getTrackingStatus(notebookName)
-	if (tracking)
-		ft_setTrackingStatus(notebookName,0)
-	else
-		ft_setTrackingStatus(notebookName,1)
+	if (numtype(tracking))
+		tracking = 0
 	endif
+	ft_setTrackingStatus(notebookName,!tracking)
 end
 	
-static function ft_setTrackingStatus(notebookName,on)
+//returns 1 if set on, 0 if set to off
+function ft_setTrackingStatus(notebookName,on)
 	String notebookName
 	Variable on	//one for on, zero for off
-
+	
+	if (strlen(notebookName) < 1) 
+		notebookName =  winname(0,16)		//would have to be top notebook that is being modified to get this menu options
+	endif
+	
 	if (numtype(on))		//nan inf ignored
 		return 0
 	endif
 	
 	if (on)			//do not allow set to on if path does exist and cannot be created by user
 		Variable pathExists = ft_track_changePath(notebookName,1,0)
-		on = 0
+		if (!pathExists)
+			on = 0
+		endif
 	endif
 	
 	setwindow $notebookName userdata(ft_trackingOn)=num2str(on)
+	
+	return on
 end
 
-static function ft_getTrackingStatus(notebookName)
+function ft_getTrackingStatus(notebookName)
 	String notebookName
 	
 	Variable nbExists=wintype(notebookName)
@@ -395,7 +425,7 @@ static function nbTsw_setTrackingStatus(notebookName,on)
 	setwindow $notebookName userdata(nbTsw_trackingOn)=num2str(on)
 end
 
-static function/S ft_track(notebookName,noNbEntryOnFolderChange)
+function/S ft_track(notebookName,noNbEntryOnFolderChange)
 	String notebookName
 	Variable noNbEntryOnFolderChange	
 		//optionally pass 1 to suppress notebook entry, good for getting started by user toggle in menu
@@ -461,36 +491,44 @@ static function/s ft_track_getSymbolicPathName(notebookName)
 end
 
 
-
+#if (exists("vdt2"))
 //RELATED TO THOR LAB SLOW WHEEL TRACKING
 static function/s nbTsw_track(notebookName)
 	String notebookName
 	
 	return tsw_getPositions_all(2)
 end
+#endif
 
 function/S nbTsw_menuDisplayStr()		//used in menu; cant be static 
 	String notebookName =  winname(0,16)		//would have to be top notebook that is being modified to get this menu options
-	
+#if (exists("vdt2"))	
 	Variable tracking = nbTsw_getTrackingStatus(notebookName)
 	if (tracking)
 		return "!!Thor Wheel tracking ON -- disable?"			//! causes check
 	endif
 	
 	return "Thor Wheel tracking OFF -- enable?" 
+#else
+	return ""
+#endif
 end
 
 function nbTsw_toggle()		//used in menu, cant be static
 	String notebookName =  winname(0,16)		//would have to be top notebook that is being modified to get this menu options
-	
+#if (exists("vdt2"))	
 	Variable tracking = nbTsw_getTrackingStatus(notebookName)
 	if (tracking)
 		nbTsw_setTrackingStatus(notebookName,0)
 	else
 		nbTsw_setTrackingStatus(notebookName,1)
 	endif
+#else
+	return 0
+#endif
 end
 
+#if (exists("vdt2"))
 static function nbTsw_getTrackingStatus(notebookName)
 	String notebookName
 	
@@ -507,3 +545,4 @@ static function nbTsw_getTrackingStatus(notebookName)
 	endif
 	return on
 end	
+#endif
