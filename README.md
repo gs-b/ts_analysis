@@ -1,6 +1,8 @@
 # Abf_timeseries_analysis
 Electrophysiology analysis, including abf loading and analysis routines in Wavemetrics Igor Pro (7 and 8)
 
+![file panel](/file_panel_image.png)
+
 # Requirements for complete functionality
 * Igor Pro 7 or 8 (tested most recently in 8.05). Download from Wavemetrics.com
 * Bruxton DataAccess (currently available for download at https://www.bruxton.com/legacy.html)
