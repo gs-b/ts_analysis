@@ -1,5 +1,5 @@
-# Abf_timeseries_analysis
-Electrophysiology analysis, including abf loading and analysis routines in Wavemetrics Igor Pro (7 and 8)
+# ts_analysis
+Time series (ts) and electrophysiology analysis in Igor Pro, including abf loading and analysis routines in Wavemetrics Igor Pro (7 and 8)
 
 ![file panel](/file_panel_image.png)
 
