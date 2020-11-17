@@ -32,9 +32,11 @@ This readme currently has the following sections (the start of which is indicate
 
 # ABF-loading specific information and usage
 
-Getting started: Once installation is finished, you can begin loading by hitting F12 (or selecting the menu item Misc->filePanel load/start). Alternatively, you can run fd_abfload("") from the command line. These options all initialize the GUI.
+Getting started: Once installation is finished, you can begin loading by hitting F12 (or selecting the menu item Misc->filePanel load/start). Alternatively, you can run fd_abfload("") from the command line. These options both initialize the GUI and immediately open a file chooser to select ABFs to "Index". Once ABFs have been indexed, they can be loaded through the file panel GUI.
 
 ABf file organization: ABF files that are to be loaded into waves can be stored anywhere in your file architecture. However, for portability, it is strongly recommended that abfs be stored within subfolders of a main "parent" folder. No abfs should be stored in the parent folder. Following this method, as long as the parent folder and relevant subfolders are available, a pxp can be reopened on a different folder and mapped to the new location of the parent folder. 
+
+This organization also allows bulk loading of all ABFs within all subfolders of a chosen "parent"/root folder. Shift click the "Index ABFs" button and choose a parent folder to use this loading method. This loads all ABFs within all the parent folders subdirectories (but not within any folders within the subdirectories).
 
 Abf file names: To use all available functions, ABF's should follow this naming scheme exactly: <letter e.g. C for last name Clark><2-digit year e.g. 18 for 2018><2-digit month e.g. 12 for december><2-digit day e.g. 07 for the 7th of december><2-digit descriptive number e.g., 00 for cell 00 recorded on dec. 7th><underscore><4-digit file number e.g. 0000 for the first file associated with cell 00 recorded on dec. 7th>. In this example, the file name would be: 'B18120700_0000.abf'
 
